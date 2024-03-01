@@ -1,11 +1,8 @@
 const checkPath = require("./checkPath");
-const findSetting = require("./findSettings");
+const settings = require("./settings");
 
 const fs = require("fs");
 const path = require("path");
-
-const settingsData = fs.readFileSync(findSetting());
-const settings = JSON.parse(settingsData);
 
 const defaultPath = settings.defaultPath;
 /**
@@ -15,21 +12,19 @@ const defaultPath = settings.defaultPath;
  * @param {*} onlyFiles 
  * @returns 
  */
-async function getPathInfo(filepath, onlyFolders = false, onlyFiles = false) {
+async function getPathInfo(filepath, onlyFolders = false, onlyFiles = false, Children = true) {
   try {
     const stats = await fs.promises.stat(filepath);
       
     const info = {
-      data: {
-        path: filepath,
-        name: path.basename(filepath),
-        isFolder: stats.isDirectory(),
-        size: stats.size,
-        created: stats.birthtime,
-        updated: stats.mtime,
-        children: [],
-      },
+      path: filepath,
+      name: path.basename(filepath),
+      isFolder: stats.isDirectory(),
+      size: stats.size,
+      created: stats.birthtime,
+      updated: stats.mtime,
     };
+      
 
     if (stats.isDirectory() && !(onlyFolders && onlyFiles)) {
       const files = await fs.promises.readdir(filepath);
@@ -44,13 +39,18 @@ async function getPathInfo(filepath, onlyFolders = false, onlyFiles = false) {
         files = files.filter((file, index) => fileStats[index].isDirectory());
       }
 
-      info.data.children = files.reduce((children, file) => {
-        const absolutePath = path.join(filepath, file);
-        if (checkPath(absolutePath.replace(/\\/g, '/')) === "Путь разрешен") {
-          children.push(path.basename(file));
+      if (Children == true) {
+        const childrenInfo = [];
+        for (const file of files) {
+          const absolutePath = path.join(filepath, file);
+          if (checkPath(absolutePath.replace(/\\/g, '/')) === "Путь разрешен") {
+            const childInfo = await getPathInfo(absolutePath, false, false, false);
+            childrenInfo.push(childInfo);
+          }
         }
-        return children;
-      }, []);
+      
+        info.children = childrenInfo;
+      }
     }
 
     return info;
@@ -64,27 +64,23 @@ async function getJsonResponse(directoryPath, onlyFolders = false, onlyFiles = f
     directoryPath = defaultPath;
   }
   directoryPath = path.resolve(directoryPath).replace(/\\/g, '/').replace(/\/\//g, '/');
-  try {
-    switch (checkPath(directoryPath)) {
+
+    let res = checkPath(directoryPath)
+    switch (res) {
       case "Путь не найден":
-        throw new Error(null);
+        throw new accessError(res);
       case "Путь запрешен":
-        throw new Error("Путь запрешен");
+        throw new accessError(res);
       case "Путь разрешен":
         return await getPathInfo(directoryPath, onlyFolders, onlyFiles);
     }
-  } catch (err) {
-    let pathInfo;
-    if (err != null) {
-      pathInfo = {
-        data: "{" + err.toString() + "}",
-      };
-    } else {
-      pathInfo = {
-        data: err,
-      };
-    }
-    return pathInfo;
+}
+
+class accessError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
+    this.statusCode = 400;
   }
 }
 
@@ -96,6 +92,6 @@ async function main() {
   } catch (err) {}
 }
 
-console.log(main())
+//console.log(main())
 
-module.exports = getJsonResponse;
+module.exports = {getJsonResponse, accessError};

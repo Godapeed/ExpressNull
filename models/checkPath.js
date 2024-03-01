@@ -1,14 +1,9 @@
-const findSetting = require("./findSettings");
+const settings = require("./settings");
 
 // Функция для проверки пути
 function checkPath(path) {
-    const fs = require("fs");
-
-    const settingsData = fs.readFileSync(findSetting());
-    const settings = JSON.parse(settingsData);
-    
     const {goodPaths, badPaths, invisiblePaths, goodPathsRegex, badPathsRegex, invisiblePathsRegex} = settings;
-  
+
     // Регулярное выражение разрешенных путей
     const goodPathsRegexs = new RegExp(goodPathsRegex);
   
