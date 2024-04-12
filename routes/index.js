@@ -24,10 +24,10 @@ router.get("/api/getPathInfo", async function(request, response){
         response.json(res);
     } catch (error) {
         if (error instanceof accessError) {
-            response.json("400: " + error.message)
+            response.status(error.status).json({ message: error.message })
         } else {
             console.error(error);
-            response.status(error.status).json({ error: error.message });
+            response.status(500).json({ error: error.message });
         }
     }
 });

@@ -1,7 +1,12 @@
 const settings = require("./settings");
 
-// Функция для проверки пути
+/**
+ * Функция для проверки пути
+ * @param {*} path Путь который надо проверить
+ * @returns Строка("Путь не найден", "Путь запрешен", "Путь разрешен")
+ */
 function checkPath(path) {
+    //Получение разрешенных, запрешенных и невидимых путей из настроек
     const {goodPaths, badPaths, invisiblePaths, goodPathsRegex, badPathsRegex, invisiblePathsRegex} = settings;
 
     // Регулярное выражение разрешенных путей
@@ -13,6 +18,7 @@ function checkPath(path) {
     // Регулярное выражение невидимых путей путей
     const invisiblePathsRegexs = new RegExp(invisiblePathsRegex);
   
+    // Проверка пути
     if (invisiblePathsRegexs.test(path)) {
       return "Путь не найден";
     }
