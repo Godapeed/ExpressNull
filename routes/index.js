@@ -32,4 +32,8 @@ router.get("/api/getPathInfo", async function(request, response){
     }
 });
 
+router.get("/api-json", function(req, res) {
+    res.json(require('../swagger/swagger_output.json'));
+});
+
 module.exports = router;
