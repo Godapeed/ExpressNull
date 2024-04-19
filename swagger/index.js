@@ -1,15 +1,24 @@
-const swaggerAutogen = require('swagger-autogen')();
+const swaggerJSDoc = require('swagger-jsdoc');
 
-const doc = {
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
     info: {
-        title: 'API Documentation',
-        description: 'This is a sample API documentation.',
+      title: 'Мой API',
+      version: '1.0.0',
+      description: 'Описание моего API',
     },
-    host: 'localhost:3000', // автонастройка порт
-    schemes: ['http'],
+    servers: [
+      {
+        url: 'http://localhost:3000',
+        description: 'Development сервер',
+      },
+    ],
+  },
+  apis: ["routes/*.js"], // Путь к файлам с описанием маршрутов API
 };
 
-const outputFile = './swagger_output.json';
-const endpointsFiles = ['./routes/index.js']; // Путь к файлу с вашими роутами
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+//console.log(swaggerSpec)
 
-swaggerAutogen(outputFile, endpointsFiles, doc);
+module.exports = swaggerSpec;

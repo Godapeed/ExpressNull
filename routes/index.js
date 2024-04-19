@@ -5,32 +5,25 @@ const {getJsonResponse, accessError} = require("../models/fs");
 
 /**
  * @swagger
- * /:
+ * /api/getPathInfo:
  *   get:
- *     summary: Получение главной страницы
- *     description: Возвращает HTML страницу с заголовком "Главная страница"
+ *     summary: Получить информацию по указанному пути
+ *     description: Возвращает информацию по указанному пути в формате JSON
+ *     parameters:
+ *       - in: query
+ *         name: path
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Путь, для которого необходимо получить информацию
  *     responses:
  *       '200':
- *         description: Успешный запрос, возвращает HTML страницу
- *         content:
- *           text/html:
- *             schema:
- *               type: string
+ *         description: Успешное получение информации. Возвращает запрошенную информацию
+ *       '400':
+ *         description: Некорректный запрос. Возвращается сообщение об ошибке
+ *       '500':
+ *         description: Внутренняя ошибка сервера. Возвращается сообщение об ошибке
  */
-router.get("/", function(request, response){
-     
-    response.send("<h1>Главная страница</h1>");
-});
-
-router.get("/about", function(request, response){
-     
-    response.send("<h1>О сайте</h1>");
-});
-
-router.get("/contact", function(request, response){
-     
-    response.send("<h1>Контакты</h1>");
-});
 
 router.get("/api/getPathInfo", async function(request, response){
     const path = request.query.path;
@@ -39,17 +32,14 @@ router.get("/api/getPathInfo", async function(request, response){
 		let res = await getJsonResponse(path);
         response.json(res);
     } catch (error) {
-        if (error instanceof accessError) {
+        console.log("dsdsd")
+        if (error instanceof accessError) {//избравить
             response.status(error.status).json({ message: error.message })
         } else {
             console.error(error);
             response.status(500).json({ error: error.message });
         }
     }
-});
-
-router.get("/api-json", function(req, res) {
-    res.json(require('../swagger/swagger_output.json'));
 });
 
 module.exports = router;
