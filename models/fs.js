@@ -84,23 +84,12 @@ async function getJsonResponse(directoryPath, onlyFolders = false, onlyFiles = f
     let res = checkPath(directoryPath)
     switch (res) {
       case "Путь не найден":
-        throw new accessError(res);
+        return {error: "Путь не найден"}
       case "Путь запрешен":
-        throw new accessError(res);
+        return {error: "Путь запрешен"}
       case "Путь разрешен":
         return await getPathInfo(directoryPath, onlyFolders, onlyFiles);
     }
 }
 
-/**
- * Класс ошибок для запрешенных и не найденых путей
- */
-class accessError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = this.constructor.name;
-    this.statusCode = 404;
-  }
-}
-
-module.exports = {getJsonResponse, accessError};
+module.exports = getJsonResponse;

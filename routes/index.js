@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const {getJsonResponse, accessError} = require("../models/fs");
+const getJsonResponse = require("../models/fs");
 
 /**
  * @swagger
@@ -21,6 +21,8 @@ const {getJsonResponse, accessError} = require("../models/fs");
  *         description: Успешное получение информации. Возвращает запрошенную информацию
  *       '400':
  *         description: Некорректный запрос. Возвращается сообщение об ошибке
+ *       '404':
+ *         description: Путь запрешен или не найден
  *       '500':
  *         description: Внутренняя ошибка сервера. Возвращается сообщение об ошибке
  */
@@ -30,16 +32,29 @@ router.get("/api/getPathInfo", async function(request, response){
 
     try {
 		let res = await getJsonResponse(path);
+        if (res.error != undefined) {
+            throw new accessError()
+        }
         response.json(res);
     } catch (error) {
-        console.log("dsdsd")
-        if (error instanceof accessError) {//избравить
-            response.status(error.status).json({ message: error.message })
+        if (error instanceof accessError) {
+            response.status(404).json({ error: error.message })
         } else {
             console.error(error);
             response.status(500).json({ error: error.message });
         }
     }
 });
+
+/**
+ * Класс ошибок для запрешенных и не найденых путей
+ */
+class accessError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = this.constructor.name;
+      this.statusCode = 404;
+    }
+}
 
 module.exports = router;
