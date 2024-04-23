@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+const cookieParser = require('cookie-parser');
+router.use(cookieParser());
 
 const getJsonResponse = require("../models/fs");
 
@@ -35,6 +37,11 @@ router.get("/api/getPathInfo", async function(request, response){
         if (res.error != undefined) {
             throw new accessError(res.res)
         }
+
+        // Увеличиваем счетчик запросов по указанному пути
+        let requestCount = request.cookies[path] ? parseInt(request.cookies[path]) + 1 : 1;
+        response.cookie(path, requestCount, { maxAge: 900000 }); // Устанавливаем срок годности куки
+
         response.json(res);
     } catch (error) {
         if (error instanceof accessError) {
