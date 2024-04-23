@@ -33,7 +33,7 @@ router.get("/api/getPathInfo", async function(request, response){
     try {
 		let res = await getJsonResponse(path);
         if (res.error != undefined) {
-            throw new accessError()
+            throw new accessError(res.res)
         }
         response.json(res);
     } catch (error) {

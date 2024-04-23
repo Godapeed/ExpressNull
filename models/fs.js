@@ -84,9 +84,9 @@ async function getJsonResponse(directoryPath, onlyFolders = false, onlyFiles = f
     let res = checkPath(directoryPath)
     switch (res) {
       case "Путь не найден":
-        return {error: "Путь не найден"}
+        return {error: "Путь не найден", res: res}
       case "Путь запрешен":
-        return {error: "Путь запрешен"}
+        return {error: "Путь запрешен", res: res}
       case "Путь разрешен":
         return await getPathInfo(directoryPath, onlyFolders, onlyFiles);
     }
