@@ -91,4 +91,4 @@ async function getJsonResponse(directoryPath, onlyFolders = false, onlyFiles = f
     }
 }
 
-module.exports = {getJsonResponse, getPathInfo};
+module.exports = getJsonResponse;
