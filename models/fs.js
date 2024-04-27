@@ -27,7 +27,6 @@ async function getPathInfo(filepath, onlyFolders = false, onlyFiles = false, Chi
       updated: stats.mtime,
     };
       
-
     if (stats.isDirectory() && !(onlyFolders && onlyFiles)) {
       // Асинхронно получаем список файлов в указанном каталоге
       const files = await fs.promises.readdir(filepath);
@@ -92,4 +91,4 @@ async function getJsonResponse(directoryPath, onlyFolders = false, onlyFiles = f
     }
 }
 
-module.exports = getJsonResponse;
+module.exports = {getJsonResponse, getPathInfo};
