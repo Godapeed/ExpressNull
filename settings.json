@@ -16,12 +16,5 @@
     "goodPathsRegex": "^C:\/Users\/Кирилл\/Desktop\/Стажировка\/FSService\/models/test/derectoris\/(home|products|about|contact).*$",
     "badPathsRegex": "^C:\/Users\/Кирилл\/Desktop\/Стажировка\/FSService\/models/test/derectoris\/products\/category\/category1$",
     "invisiblePathsRegex": "^C:\/Users\/Кирилл\/Desktop\/Стажировка\/FSService\/models/test/derectoris\/products\/category\/category2$",
-    "port": 3000,
-    "root": "C:/Users/Кирилл/Desktop/Стажировка/FSService/models/test/derectoris",
-    "user": "postgres",
-    "host": "localhost",
-    "database": "fss",
-    "password": "gamemode1324",
-    "pgPort": 5432,
-    "tableName": "fileinfo"
+    "port": 3000
 }
