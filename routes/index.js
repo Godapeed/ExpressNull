@@ -3,7 +3,7 @@ var router = express.Router();
 const cookieParser = require('cookie-parser');
 router.use(cookieParser());
 
-const {getJsonResponse} = require("../models/fs");
+const getJsonResponse = require("../models/fs");
 
 /**
  * @swagger
