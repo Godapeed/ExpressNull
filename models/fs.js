@@ -27,7 +27,6 @@ async function getPathInfo(filepath, onlyFolders = false, onlyFiles = false, Chi
       updated: stats.mtime,
     };
       
-
     if (stats.isDirectory() && !(onlyFolders && onlyFiles)) {
       // Асинхронно получаем список файлов в указанном каталоге
       const files = await fs.promises.readdir(filepath);
@@ -84,23 +83,12 @@ async function getJsonResponse(directoryPath, onlyFolders = false, onlyFiles = f
     let res = checkPath(directoryPath)
     switch (res) {
       case "Путь не найден":
-        throw new accessError(res);
+        return {error: "Путь не найден", res: res}
       case "Путь запрешен":
-        throw new accessError(res);
+        return {error: "Путь запрешен", res: res}
       case "Путь разрешен":
         return await getPathInfo(directoryPath, onlyFolders, onlyFiles);
     }
 }
 
-/**
- * Класс ошибок для запрешенных и не найденых путей
- */
-class accessError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = this.constructor.name;
-    this.statusCode = 404;
-  }
-}
-
-module.exports = {getJsonResponse, accessError};
+module.exports = {getJsonResponse, getPathInfo};

@@ -1,2 +1,5 @@
 /.dist
 /node_modules
+/models/debug.js
+.env
+.env.examle
