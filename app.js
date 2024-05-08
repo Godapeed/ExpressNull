@@ -1,6 +1,7 @@
 const express = require("express");
 const settings = require("./models/settings.js");
 var indexRouter = require('./routes/index');
+var indexDb = require('./routes/db');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger/index.js');
 const cookieParser = require('cookie-parser');
@@ -10,6 +11,7 @@ app.use(cookieParser());
 
 app.use(express.json())
 app.use('/', indexRouter);
+app.use('/', indexDb);
 
 //Вывод всех отсортированных куки
 app.get('/cookies', (req, res) => {

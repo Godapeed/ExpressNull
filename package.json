@@ -2,8 +2,7 @@
   "name": "helloapp",
   "version": "1.0.0",
   "scripts": {
-    "test": "jest",
-    "gen": "node ./swagger/index.js"
+    "test": "jest"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
