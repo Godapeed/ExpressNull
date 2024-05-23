@@ -24,5 +24,6 @@
     "database": "fss",
     "password": "gamemode1324",
     "pgPort": 5432,
-    "tableName": "file_info"
+    "tableName": "file_info",
+    "tableNameUsers": "users"
 }

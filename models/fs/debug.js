@@ -1,6 +1,6 @@
 //Файл для отладки
-const {getJsonResponse, accessError} = require("../models/fs");
-const checkPath = require("../models/checkPath")
+/*const {getJsonResponse, accessError} = require("../fs/fs");
+const checkPath = require("../fs/checkPath")
 const paths = "models/test/derectoris"
 const settings = require("./settings");
 const fs = require('fs');
@@ -21,7 +21,7 @@ async function main() {
     }
   }
   
-console.log(main())
+//console.log(main())
 //console.log(checkPath(path))
 
 const {Client} = require('pg');
@@ -47,4 +47,7 @@ async function test(client) {
   }
 }
 
-//test(client)
+//test(client)*/
+let ids = [1, 2, 3]
+const placeholders = ids.map((id, index) => (index+1)).join(', ');
+    console.log("${placeholders}")
