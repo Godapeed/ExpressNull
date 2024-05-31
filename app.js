@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-const {main, verifyCallback} = require('./createTableUsers.js');
+const {verifyCallback} = require('./models/db/verifyCallback.js');
 const session = require('express-session');
 const flash = require('connect-flash');
 

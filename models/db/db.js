@@ -7,99 +7,14 @@ const root = settings.root;
 
 const {Client} = require('pg');
 
-//Клиент необходимы для проверки существования нужной БД
-const client = new Client({
-    user: settings.user,
-    host: settings.host,
-    database: '',
-    password: settings.password,
-    port: settings.pgPort
-});
 //Клиент необходимый для подключения к БД
-const client2 = new Client({
+const client = new Client({
   user: settings.user,
   host: settings.host,
   database: settings.database,
   password: settings.password,
   port: settings.pgPort
 });
-/**
- * Функция получения массива сушествуюших БД
- * @param {*} client Клиент по которому происходит взаимодействие с БД
- * @returns Массив всех БД на сервере pssql
- */
-async function getAllDatabases(client) {
-  try {
-      const res = await client.query('SELECT datname FROM pg_database');
-
-      const databaseArray = res.rows.map(row => row.datname);
-      return databaseArray;
-  } catch (err) {
-      console.error("Ошибка при извлечении списка базданных: "+err);
-  }
-};
-/**
- * Функция проверки существования елемента в массиве
- * @param {*} array Массив в котором ищут
- * @param {*} element Элемент который ищут
- * @returns true - элемент найден, false - элемент не найден
- */
-function checkElementExists(array, element) {
-  return array.some(item => item.toLowerCase() === element.toLowerCase());
-}
-/**
- * Функция создания БД
- * @param {*} client Клиент по которому происходит взаимодействие с БД
- * @param {*} dbName Название БД
- */
-async function createDatabase(client, dbName) {
-  try {
-      await client.query("CREATE DATABASE "+dbName);
-
-      console.log("База данных "+dbName+" успешно создана.");
-  } catch (err) {
-      console.error('Ошибка при создании базы данных:', err);
-  }
-}
-/**
- * Функция получения массива существующих таблиц
- * @param {*} client Клиент по которому происходит взаимодействие с БД
- * @returns Массива существующих таблиц
- */
-async function getAllTablesFromDB(client) {
-
-  try {
-      const res = await client.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'");
-      const tables = res.rows.map(row => row.table_name);
-      return tables;
-  } catch (error) {
-      console.error(error);
-  }
-}
-/**
- * Функция создания таблицы
- * @param {*} client Клиент по которому происходит взаимодействие с БД
- * @param {*} table_name Название таблицы
- */
-async function createTable(client, table_name) {
-  try {
-    await client.query(`CREATE TABLE IF NOT EXISTS `+table_name+` (
-                          id SERIAL PRIMARY KEY,
-                          name VARCHAR(255) NOT NULL,
-                          id_parent INTEGER,
-                          path TEXT,
-                          folder BOOLEAN,
-                          size DOUBLE PRECISION,
-                          created_at TIMESTAMP with time zone,
-                          updated_at TIMESTAMP with time zone,
-                          delete BOOLEAN
-                      );`);
-
-    console.log("Таблица "+table_name+" успешно создана.");
-  } catch (err) {
-    console.error('Ошибка при создании таблицы:', err);
-  }
-}
 /**
  * Функция получения id используя path
  * @param {*} client Клиент по которому происходит взаимодействие с БД
@@ -108,7 +23,7 @@ async function createTable(client, table_name) {
  */
 async function getId(client, path) {
     try {
-        const id = await client.query(`SELECT id FROM `+settings.tableName+` WHERE path='`+path+`'`);
+        const id = await client.query(`SELECT id FROM `+settings.tableNameFileInfo+` WHERE path='`+path+`'`);
 
         return id;
     } catch(err) {
@@ -128,7 +43,7 @@ async function getId(client, path) {
  */
 async function insert(client, name, id_parent, path, isFolder, size, created, updated) {
     try {
-        await client.query(`INSERT INTO `+settings.tableName+` (name, id_parent, path, folder, size, created_at, updated_at, delete)
+        await client.query(`INSERT INTO `+settings.tableNameFileInfo+` (name, id_parent, path, folder, size, created_at, updated_at, delete)
                             VALUES ('`+name+`', `+id_parent+`, '`+path+`', `+isFolder+`, `+size+`, 
                             '`+created+`', '`+updated+`', false);`);
     } catch(err) {
@@ -145,7 +60,7 @@ async function insert(client, name, id_parent, path, isFolder, size, created, up
  */
 async function updated_info(client, id, name, size, updated_at) {
   try {
-      await client.query(`UPDATE `+settings.tableName+`
+      await client.query(`UPDATE `+settings.tableNameFileInfo+`
                             SET 
                             name='`+name+`', 
                             size=`+size+`, 
@@ -163,7 +78,7 @@ async function updated_info(client, id, name, size, updated_at) {
  */
 async function updated_delete(client, ids) {
   try {
-    await client.query(`UPDATE `+settings.tableName+`
+    await client.query(`UPDATE `+settings.tableNameFileInfo+`
                     SET 
                     delete=`+true+`
                   WHERE id NOT IN `+ids+`;`);
@@ -195,11 +110,11 @@ async function readDirRecursive(root, level, client, id_parent, ids = []) {
       
       if (id === undefined) {
         await insert(client, info.name+"", id_parent, info.path+"", info.isFolder, info.size, info.created.toISOString(), info.updated.toISOString(), false);
-        const id = await client.query(`SELECT id FROM `+settings.tableName+` WHERE path='`+info.path+`'`);
+        const id = await client.query(`SELECT id FROM `+settings.tableNameFileInfo+` WHERE path='`+info.path+`'`);
         ids.push(id);
       } else {
         ids.push(id);
-        const updated = await client.query(`SELECT updated_at FROM `+settings.tableName+` WHERE id='`+id+`'`);
+        const updated = await client.query(`SELECT updated_at FROM `+settings.tableNameFileInfo+` WHERE id='`+id+`'`);
         const last_updated = updated.rows.map(row => row.updated_at)[0];
         if (new Date(last_updated).getTime() !== new Date(info.updated.toISOString()).getTime()) {
           await updated_info(client, id, info.name+"", info.size, info.updated.toISOString());
@@ -219,42 +134,20 @@ async function readDirRecursive(root, level, client, id_parent, ids = []) {
   }
 }
 /**
- * Функуия проверки наличия БД, таблицы. Дублирование элементов хранящихся на локальном хранилище в БД
- * @param {*} client Клиент необходимы для проверки существования нужной БД
- * @param {*} client2 Клиент по которому происходит взаимодействие с БД
+ * Функуия дублирования элементов хранящихся на локальном хранилище в БД
+ * @param {*} client Клиент по которому происходит взаимодействие с БД
  */
-async function main(client, client2) {
+async function localStorageMirroring(client) {
   try {
-    //Проверка наличия БД
-    await client.connect();
-
-    const databases = await getAllDatabases(client);
-    //console.log(databases);
-    if (!checkElementExists(databases, settings.database)) {
-      await createDatabase(client, settings.database);
-    }
-    
-    //Проверка наличия таблицы
-    await client2.connect();
-
-    const tables = await getAllTablesFromDB(client2);
-    //console.log(tables);
-    if (!checkElementExists(tables, settings.tableName)) {
-      await createTable(client2, settings.tableName);
-    }
-
     //Рекурсивный проход всех элементов и дублирование элементов в БД
-    var ids = await readDirRecursive(root, 0, client2, null);
+    var ids = await readDirRecursive(root, 0, client, null);
     ids = '(' + ids + ')';
-    await updated_delete(client2, ids);
+    await updated_delete(client, ids);
   } catch (error) {
     console.error(error);
-  } finally {
-    client.end();
-    client2.end();
   }
 }
 
-main(client, client2);
+localStorageMirroring(client);
 
-module.exports = {main, getAllTablesFromDB, checkElementExists}
+module.exports = {localStorageMirroring}
