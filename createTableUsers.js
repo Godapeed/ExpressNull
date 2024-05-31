@@ -1,5 +1,3 @@
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const { Client } = require('pg');
 const settings = require("./models/fs/settings.js");
 const {getAllTablesFromDB, checkElementExists} = require("./models/db/db.js");
@@ -29,35 +27,43 @@ async function createTable(client, table_name) {
     }
 }
 
+async function insertTable(client, table_name) {
+    try {
+        await client.query(`INSERT INTO `+table_name+`(login, password)
+                            VALUES ('admin', 'admin');`)
+    } catch (err) {
+        console.error('Ошибка вставке нулевого администратора:', err);
+    }
+}
+
 async function main() {
     const tables = await getAllTablesFromDB(client);
 
     if (!checkElementExists(tables, settings.tableNameUsers)) {
         await createTable(client, settings.tableNameUsers);
+        await insertTable(client, settings.tableNameUsers);
     }
 }
 
-main();
-
-
-passport.use(new LocalStrategy(
-  async (username, password, done) => {
+async function verifyCallback(username, password, done) {
     try {
-      const query = 'SELECT * FROM ' + settings.tableNameUsers + ' WHERE login = $1';
-      const { rows } = await client.query(query, [username]);
+      const { rows } = await client.query('SELECT * FROM ' + settings.tableNameUsers + ' WHERE login = $1', [username]);
       
-      if (!rows.length) {
+      if (rows.length == 0) {
         return done(null, false);
       }
-
+  
       const user = rows[0];
       if (user.password !== password) {
         return done(null, false);
       }
-
+  
       return done(null, user);
     } catch (error) {
       return done(error);
     }
-  }
-));
+};
+
+//verifyCallback('admin', 'admin');
+
+module.exports = {main, verifyCallback};

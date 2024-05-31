@@ -4,11 +4,26 @@ var indexRouter = require('./routes/index');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger/index.js');
 const cookieParser = require('cookie-parser');
+
 const passport = require('passport');
-const passportConfig = require('./passport-config.js');
+const LocalStrategy = require('passport-local');
+const {main, verifyCallback} = require('./createTableUsers.js');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const app = express();
+
+app.use(session({
+    secret: '1324',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(flash());
+
 app.use(cookieParser());
+
+passport.use(new LocalStrategy(verifyCallback));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
