@@ -1,15 +1,6 @@
 const settings = require("../fs/settings.js");
 const {checkElementExists} = require("../db/checkElementExists.js");
-
-const { Client } = require('pg');
-
-const client = new Client({
-    user: settings.user,
-    host: settings.host,
-    database: settings.database,
-    password: settings.password,
-    port: settings.pgPort
-});
+const client = require("./client.js")
 
 /**
  * Функция создания таблицы users
@@ -90,8 +81,6 @@ async function getAllTablesFromDB(client) {
  */
 async function createTables() {
     try {
-        await client.connect();
-
         const tables = await getAllTablesFromDB(client);
 
         if (!checkElementExists(tables, settings.tableNameUsers)) {
@@ -106,8 +95,6 @@ async function createTables() {
         }
     } catch(error) {
         console.error("Ошибка при создании таблиц: " + error);
-    } finally {
-        client.end();
     }
 }
 

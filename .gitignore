@@ -1,6 +1,7 @@
 /.dist
 /node_modules
-/models/debug.js
+/models/db/debug.js
+/models/db/debug2.js
 .env
 .env.examle
 .vscode

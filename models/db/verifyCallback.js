@@ -1,19 +1,23 @@
 const settings = require("../fs/settings.js");
-const client = require("./createTables.js");
+const client = require("./client.js")
 
+async function verifyCallback(username, password, done) {
+  try {
+    const { rows } = await client.query(`SELECT * FROM ${settings.tableNameUsers} WHERE login = '${username}'`);
 
-const verifyCallback = (username='admin', password='admin', done) => {
-  User.findOne({ username: username }, (err, user) => {
-      if (err) { return done(err); }
-      if (!user) {
-          return done(null, false, { message: 'Неправильное имя пользователя' });
-      }
-      if (!user.validPassword(password)) {
-          return done(null, false, { message: 'Неверный пароль' });
-      }
-      return done(null, user);
-  });
+    if (rows.length === 0) {
+      return done(null, false);
+    }
+
+    const user = rows[0];
+    if (user.password !== password) {
+      return done(null, false);
+    }
+
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
 };
-
 
 module.exports = {verifyCallback};

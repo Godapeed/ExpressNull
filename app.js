@@ -6,7 +6,7 @@ const swaggerSpec = require('./swagger/index.js');
 const cookieParser = require('cookie-parser');
 
 const passport = require('passport');
-const LocalStrategy = require('passport-local');
+const LocalStrategy = require('passport-local').Strategy;
 const {verifyCallback} = require('./models/db/verifyCallback.js');
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -21,6 +21,12 @@ app.use(session({
 app.use(flash());
 
 app.use(cookieParser());
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 passport.use(new LocalStrategy(verifyCallback));
 
