@@ -1,5 +1,5 @@
 const settings = require("C:/Users/Кирилл/Desktop/Стажировка/FSService/settings.json");
-const {checkElementExists} = require("../db/checkElementExists.js");
+const {checkElementExists} = require("./checkElementExists.js");
 
 const { Client } = require('pg');
 

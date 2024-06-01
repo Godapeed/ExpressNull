@@ -1,5 +1,5 @@
-const {createDatabase} = require("../db/createDatabase.js");
-const {createTables} = require("../db/createTables.js");
+const {createDatabase} = require("./createDatabase.js");
+const {createTables} = require("./createTables.js");
 
 /**
  * Функуия создания БД и ее наполнения

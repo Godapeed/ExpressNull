@@ -1,4 +1,4 @@
-const settings = require("../fs/settings.js");
+const settings = require("../../fs/settings.js");
 const client = require("./client.js")
 
 async function verifyCallback(username, password, done) {

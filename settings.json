@@ -25,5 +25,6 @@
     "password": "gamemode1324",
     "pgPort": 5432,
     "tableNameFileInfo": "file_info",
-    "tableNameUsers": "users"
+    "tableNameUsers": "users",
+    "db": ""
 }

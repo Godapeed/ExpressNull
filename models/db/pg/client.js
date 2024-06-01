@@ -1,4 +1,4 @@
-const settings = require("../fs/settings.js");
+const settings = require("../../fs/settings.js");
 
 const { Client } = require('pg');
 

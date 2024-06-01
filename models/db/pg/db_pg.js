@@ -2,7 +2,7 @@ const settings = require("C:/Users/Кирилл/Desktop/Стажировка/FSS
 const fs = require('fs');
 const path = require('path');
 
-const {getPathInfo, getJsonResponse} = require("../fs/fs");
+const {getPathInfo, getJsonResponse} = require("../../fs/fs");
 const root = settings.root;
 
 const {Client} = require('pg');
