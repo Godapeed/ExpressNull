@@ -1,4 +1,4 @@
-const settings = require("C:/Users/Кирилл/Desktop/Стажировка/FSService/settings.json");
+const settings = require("../../fs/settings.js");
 const fs = require('fs');
 const path = require('path');
 
@@ -145,6 +145,8 @@ async function localStorageMirroring(client) {
     await updated_delete(client, ids);
   } catch (error) {
     console.error(error);
+  } finally {
+    client.end();
   }
 }
 

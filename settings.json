@@ -26,5 +26,7 @@
     "pgPort": 5432,
     "tableNameFileInfo": "file_info",
     "tableNameUsers": "users",
-    "db": ""
+    "db": "",
+    "pathDbSqlite": "C:/SQLite/fss.db",
+    "dialect": "postgres"
 }

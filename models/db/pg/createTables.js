@@ -9,7 +9,7 @@ const client = require("./client.js")
  */
 async function createTableUsers(client, table_name) {
     try {
-      await client.query(`CREATE TABLE IF NOT EXISTS `+table_name+` (
+      await client.query(`CREATE TABLE IF NOT EXISTS ${table_name} (
                             id SERIAL PRIMARY KEY,
                             login VARCHAR(255) NOT NULL,
                             password VARCHAR(255) NOT NULL,
@@ -29,7 +29,7 @@ async function createTableUsers(client, table_name) {
  */
 async function insertTableUsers(client, table_name) {
     try {
-        await client.query(`INSERT INTO `+table_name+`(login, password)
+        await client.query(`INSERT INTO ${table_name}(login, password)
                             VALUES ('admin', 'admin');`)
     } catch (err) {
         console.error('Ошибка вставке нулевого администратора:', err);
@@ -43,7 +43,7 @@ async function insertTableUsers(client, table_name) {
  */
 async function createTableFileInfo(client, table_name) {
     try {
-      await client.query(`CREATE TABLE IF NOT EXISTS `+table_name+` (
+      await client.query(`CREATE TABLE IF NOT EXISTS ${table_name} (
                             id SERIAL PRIMARY KEY,
                             name VARCHAR(255) NOT NULL,
                             id_parent INTEGER,
